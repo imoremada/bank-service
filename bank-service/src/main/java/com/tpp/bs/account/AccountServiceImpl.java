@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
+    private final AccountCommandRepository accountCommandRepository;
 
     @Override
     public Boolean processAccountOpening(Account account) {
-        return Boolean.FALSE;
+        return accountCommandRepository.create(account);
     }
 }
