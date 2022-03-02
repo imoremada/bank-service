@@ -2,6 +2,7 @@ package com.tpp.bank_service.account_handler;
 
 import com.tpp.bs.account.Account;
 import com.tpp.bs.account.AccountService;
+import com.tpp.bs.account_handler.AccountBalanceCalculationRequest;
 import com.tpp.bs.account_handler.AccountHandler;
 import com.tpp.bs.account_handler.AccountMapper;
 import com.tpp.bs.account_handler.AccountRequest;
@@ -38,5 +39,17 @@ class AccountHandlerTest {
 
         //Then
         Assertions.assertTrue(isSuccess);
+    }
+
+    @Test
+    public void testShouldReturnFalseHandleAccountOpeningRequest() {
+        //Given
+        AccountBalanceCalculationRequest accountBalanceCalculationRequest = mock(AccountBalanceCalculationRequest.class);
+
+        //When
+        Boolean isSuccess = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
+
+        //Then
+        Assertions.assertFalse(isSuccess);
     }
 }

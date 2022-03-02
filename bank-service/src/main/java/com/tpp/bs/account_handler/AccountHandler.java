@@ -14,4 +14,8 @@ public class AccountHandler {
     public Boolean openAccount(AccountRequest accountOpenRequest) {
         return accountService.processAccountOpening(accountMapper.map(accountOpenRequest));
     }
+
+    public Boolean processEndOfTheDayBalance(AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
+        return Boolean.FALSE;
+    }
 }
