@@ -8,7 +8,7 @@ import lombok.Getter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
@@ -20,7 +20,7 @@ public class AccountRequest {
     private String bsb;
     @NotBlank
     private String identification;
-    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate openingDate;
+    private BigDecimal balance;
 }

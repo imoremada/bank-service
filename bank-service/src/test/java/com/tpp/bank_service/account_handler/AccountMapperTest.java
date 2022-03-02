@@ -36,4 +36,44 @@ class AccountMapperTest {
         Assertions.assertEquals(BigDecimal.ZERO, account.getBalance());
     }
 
+    @Test
+    public void testShouldSuccessfullyMapAccountRequestToAccountWhenBalanceIsPresent(){
+        //Given
+        AccountRequest accountOpenRequest = AccountRequest.builder()
+                .identification("identification")
+                .bsb("bsp")
+                .balance(BigDecimal.TEN)
+                .openingDate(LocalDate.now())
+                .build();
+
+        //When
+        Account account = accountMapper.map(accountOpenRequest);
+
+        //Then
+        Assertions.assertEquals(accountOpenRequest.getBsb(), account.getBsb());
+        Assertions.assertEquals(accountOpenRequest.getIdentification(), account.getIdentification());
+        Assertions.assertEquals(accountOpenRequest.getOpeningDate(), account.getOpeningDate());
+        Assertions.assertEquals(BigDecimal.TEN, account.getBalance());
+    }
+
+
+    @Test
+    public void testShouldSuccessfullyMapAccountRequestToAccountWhenOpenDateIsNull(){
+        //Given
+        AccountRequest accountOpenRequest = AccountRequest.builder()
+                .identification("identification")
+                .bsb("bsp")
+                .balance(BigDecimal.TEN)
+                .build();
+
+        //When
+        Account account = accountMapper.map(accountOpenRequest);
+
+        //Then
+        Assertions.assertEquals(accountOpenRequest.getBsb(), account.getBsb());
+        Assertions.assertEquals(accountOpenRequest.getIdentification(), account.getIdentification());
+        Assertions.assertNull(account.getOpeningDate());
+        Assertions.assertEquals(BigDecimal.TEN, account.getBalance());
+    }
+
 }
