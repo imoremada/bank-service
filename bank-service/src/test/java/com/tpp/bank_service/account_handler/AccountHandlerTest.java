@@ -4,7 +4,7 @@ import com.tpp.bs.account.Account;
 import com.tpp.bs.account.AccountService;
 import com.tpp.bs.account_handler.AccountHandler;
 import com.tpp.bs.account_handler.AccountMapper;
-import com.tpp.bs.account_handler.AccountOpenRequest;
+import com.tpp.bs.account_handler.AccountRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,12 +29,12 @@ class AccountHandlerTest {
     @Test
     public void testShouldSuccessfullyHandleAccountOpeningRequest() {
         //Given
-        AccountOpenRequest accountOpenRequest = mock(AccountOpenRequest.class);
-        when(accountMapper.map(any(AccountOpenRequest.class))).thenReturn(mock(Account.class));
+        AccountRequest accountRequest = mock(AccountRequest.class);
+        when(accountMapper.map(any(AccountRequest.class))).thenReturn(mock(Account.class));
         when(accountService.processAccountOpening(any(Account.class))).thenReturn(Boolean.TRUE);
 
         //When
-        Boolean isSuccess = accountHandler.openAccount(accountOpenRequest);
+        Boolean isSuccess = accountHandler.openAccount(accountRequest);
 
         //Then
         Assertions.assertTrue(isSuccess);

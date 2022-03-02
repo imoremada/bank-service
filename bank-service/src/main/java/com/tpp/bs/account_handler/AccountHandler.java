@@ -11,7 +11,7 @@ public class AccountHandler {
     private final AccountMapper accountMapper;
     private final AccountService accountService;
 
-    public Boolean openAccount(AccountOpenRequest accountOpenRequest) {
+    public Boolean openAccount(AccountRequest accountOpenRequest) {
         return accountService.processAccountOpening(accountMapper.map(accountOpenRequest));
     }
 }

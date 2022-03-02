@@ -16,7 +16,7 @@ public class AccountController {
     private final AccountHandler accountHandler;
 
     @PostMapping("/processAccountOpening")
-    public Boolean processAccountOpening(@Valid @RequestBody AccountOpenRequest accountOpenRequest) {
+    public Boolean processAccountOpening(@Valid @RequestBody AccountRequest accountOpenRequest) {
         return accountHandler.openAccount(accountOpenRequest);
     }
 }

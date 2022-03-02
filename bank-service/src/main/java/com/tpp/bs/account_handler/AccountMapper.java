@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Component
 public class AccountMapper {
 
-    public Account map(AccountOpenRequest accountOpenRequest){
+    public Account map(AccountRequest accountOpenRequest){
         return Account.builder()
                 .identification(accountOpenRequest.getIdentification())
                 .bsb(accountOpenRequest.getBsb())

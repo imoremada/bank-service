@@ -2,7 +2,7 @@ package com.tpp.bank_service.account_handler;
 
 import com.tpp.bs.account.Account;
 import com.tpp.bs.account_handler.AccountMapper;
-import com.tpp.bs.account_handler.AccountOpenRequest;
+import com.tpp.bs.account_handler.AccountRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ class AccountMapperTest {
     @Test
     public void testShouldSuccessfullyMapAccountRequestToAccount(){
         //Given
-        AccountOpenRequest accountOpenRequest = AccountOpenRequest.builder()
+        AccountRequest accountOpenRequest = AccountRequest.builder()
                 .identification("identification")
                 .bsb("bsp")
                 .openingDate(LocalDate.now())
