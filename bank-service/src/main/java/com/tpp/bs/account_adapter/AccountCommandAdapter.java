@@ -25,6 +25,7 @@ public class AccountCommandAdapter implements AccountCommandRepository {
                             .identification(account.getIdentification())
                             .lastUpdatedTime(currentTime)
                             .createdTime(currentTime)
+                            .balance(account.getBalance())
                             .openingDate(account.getOpeningDate())
                     .build());
             log.info("Successfully processed the account opening for bsp {}, openingDate: {}", account.getBsb(), account.getOpeningDate());
