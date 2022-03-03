@@ -5,12 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -26,4 +25,10 @@ public class AccountEntity {
     private BigDecimal balance;
     private OffsetDateTime lastUpdatedTime;
     private OffsetDateTime createdTime;
+    @OneToMany
+    @MapsId("dailyInterestId")
+    @JoinColumns({
+            @JoinColumn(name="identification", referencedColumnName="identification")
+    })
+    private List<DailyInterestEntity> dailyInterests;
 }
