@@ -1,6 +1,7 @@
 package com.tpp.bs.account_adapter;
 
 import com.tpp.bs.account.Account;
+import com.tpp.bs.account.DailyInterest;
 import com.tpp.bs.common.DateTimeProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,14 +27,16 @@ class AccountCommandAdapterTest {
     private AccountJpaRepository accountJpaRepository;
     @Mock
     private DateTimeProvider dateTimeProvider;
+    @Mock
+    private DailyInterestJpaRepository dailyInterestJpaRepository;
 
     @Test
-    public void testShouldReturnFalseWhenExceptionIsOccurredWhileSavingData() {
+    public void testShouldReturnFalseWhenExceptionIsOccurredWhileSavingAccount() {
         //Given
         Mockito.when(accountJpaRepository.save(any(AccountEntity.class))).thenThrow(new RuntimeException("Exception occurred"));
 
         //When
-        Boolean isSuccess = accountCommandAdapter.create(mock(Account.class));
+        Boolean isSuccess = accountCommandAdapter.saveDailyInterest(mock(Account.class));
 
         //Then
         Assertions.assertFalse(isSuccess);
@@ -48,12 +51,24 @@ class AccountCommandAdapterTest {
         Mockito.when(dateTimeProvider.currentOffsetDateTime()).thenReturn(dateTime);
 
         //When
-        Boolean isSuccess = accountCommandAdapter.create(account);
+        Boolean isSuccess = accountCommandAdapter.saveDailyInterest(account);
 
         //Then
         Assertions.assertTrue(isSuccess);
         ArgumentCaptor<AccountEntity> argumentCaptor = ArgumentCaptor.forClass(AccountEntity.class);
         Mockito.verify(accountJpaRepository, times(1)).save(argumentCaptor.capture());
         Assertions.assertEquals(dateTime, argumentCaptor.getValue().getCreatedTime());
+    }
+
+    @Test
+    public void testShouldReturnFalseWhenExceptionIsOccurredWhileSavingInterest() {
+        //Given
+        Mockito.when(dailyInterestJpaRepository.save(any(DailyInterestEntity.class))).thenThrow(new RuntimeException("Exception occurred"));
+
+        //When
+        Boolean isSuccess = accountCommandAdapter.saveDailyInterest(mock(DailyInterest.class));
+
+        //Then
+        Assertions.assertFalse(isSuccess);
     }
 }
