@@ -1,7 +1,7 @@
 package com.tpp.bs.account;
 
 public interface AccountCommandRepository {
-    Boolean saveDailyInterest(Account account);
+    boolean saveDailyInterest(Account account);
 
-    void saveDailyInterest(DailyInterest dailyInterest);
+    boolean saveDailyInterest(DailyInterest dailyInterest);
 }

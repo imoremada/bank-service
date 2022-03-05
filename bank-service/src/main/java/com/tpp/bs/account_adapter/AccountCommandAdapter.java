@@ -20,14 +20,14 @@ public class AccountCommandAdapter implements AccountCommandRepository {
     private final DateTimeProvider dateTimeProvider;
 
     @Override
-    public Boolean saveDailyInterest(Account account) {
+    public boolean saveDailyInterest(Account account) {
         try {
             OffsetDateTime currentTime = dateTimeProvider.currentOffsetDateTime();
             accountJpaRepository.save(AccountEntity.builder()
                             .bsb(account.getBsb())
                             .identification(account.getIdentification())
                             .lastUpdatedTime(currentTime)
-                            .createdTime(currentTime)
+                            .createdTime(account.getCreatedDate())
                             .balance(account.getBalance())
                             .openingDate(account.getOpeningDate())
                     .build());
