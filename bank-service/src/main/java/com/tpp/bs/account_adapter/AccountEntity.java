@@ -1,9 +1,15 @@
 package com.tpp.bs.account_adapter;
 
+import com.tpp.bs.account.Account;
+import com.tpp.bs.account.AccountQueryRepository;
+import com.tpp.bs.account.DailyInterest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
