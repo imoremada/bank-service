@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,14 +23,16 @@ public class AccountHandler {
         return accountService.processAccountOpening(accountMapper.map(accountOpenRequest));
     }
 
-    public Boolean processEndOfTheDayBalance(AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
+    public List<AccountRequest> processEndOfTheDayBalance(AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
         if (Objects.isNull(accountBalanceCalculationRequest.getBalanceDate())) {
             log.error("Invalid request has been passed to process end of the day balance with balanceDate: {}", accountBalanceCalculationRequest.getBalanceDate());
-            return Boolean.FALSE;
+            return Collections.EMPTY_LIST;
         }
         List<Account> accounts = accountBalanceCalculationRequest.getAccounts()
                 .stream().map(accountMapper::map)
                 .collect(Collectors.toList());
-        return accountService.calculateDailyAccruedInterest(accounts, accountBalanceCalculationRequest.getBalanceDate());
+        return accountService.calculateDailyAccruedInterest(accounts, accountBalanceCalculationRequest.getBalanceDate())
+                .stream().map(accountMapper::map)
+                .collect(Collectors.toList());
     }
 }

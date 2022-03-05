@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -51,10 +52,10 @@ class AccountHandlerTest {
         AccountBalanceCalculationRequest accountBalanceCalculationRequest = mock(AccountBalanceCalculationRequest.class);
 
         //When
-        Boolean isSuccess = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
+        List<AccountRequest> accountRequests = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
 
         //Then
-        Assertions.assertFalse(isSuccess);
+        Assertions.assertTrue(accountRequests.isEmpty());
     }
 
     @Test
@@ -64,13 +65,13 @@ class AccountHandlerTest {
                 .accounts(Collections.singletonList(mock(AccountRequest.class)))
                 .build();
 
-        when(accountService.calculateDailyAccruedInterest(anyList(), any(LocalDate.class))).thenReturn(Boolean.TRUE);
+        when(accountService.calculateDailyAccruedInterest(anyList(), any(LocalDate.class))).thenReturn(Collections.singletonList(mock(Account.class)));
         when(accountMapper.map(any(AccountRequest.class))).thenReturn(mock(Account.class));
 
         //When
-        Boolean isSuccess = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
+        List<AccountRequest> accountRequests = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
 
         //Then
-        Assertions.assertTrue(isSuccess);
+        Assertions.assertFalse(accountRequests.isEmpty());
     }
 }

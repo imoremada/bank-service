@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class AccountController {
     }
 
     @PutMapping("/processAccountEndOfDayBalances")
-    public Boolean processEndOfTheDayBalance(@Valid @RequestBody AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
+    public List<AccountRequest> processEndOfTheDayBalance(@Valid @RequestBody AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
         return accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
     }
 }

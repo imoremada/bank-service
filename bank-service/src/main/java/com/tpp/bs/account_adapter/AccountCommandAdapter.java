@@ -16,11 +16,10 @@ import java.time.OffsetDateTime;
 public class AccountCommandAdapter implements AccountCommandRepository {
     private final AccountJpaRepository accountJpaRepository;
     private final DailyInterestJpaRepository dailyInterestJpaRepository;
-
     private final DateTimeProvider dateTimeProvider;
 
     @Override
-    public boolean saveDailyInterest(Account account) {
+    public boolean saveAccount(Account account) {
         try {
             OffsetDateTime currentTime = dateTimeProvider.currentOffsetDateTime();
             accountJpaRepository.save(AccountEntity.builder()
@@ -34,13 +33,13 @@ public class AccountCommandAdapter implements AccountCommandRepository {
             log.info("Successfully save the account for bsp {}, openingDate: {}", account.getBsb(), account.getOpeningDate());
             return Boolean.TRUE;
         }catch (Exception e){
-          log.error("Exception occurred while creating the account :{}", e);
+          log.error("Exception occurred while saving the account :{}", e);
           return Boolean.FALSE;
         }
     }
 
     @Override
-    public boolean saveDailyInterest(DailyInterest dailyInterest) {
+    public boolean saveDailyAccountInterest(DailyInterest dailyInterest) {
         try {
             dailyInterestJpaRepository.save(DailyInterestEntity.builder()
                             .interest(dailyInterest.getInterest())

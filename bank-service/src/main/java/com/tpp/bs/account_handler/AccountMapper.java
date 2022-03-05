@@ -17,4 +17,12 @@ public class AccountMapper {
                 .openingDate(accountRequest.getOpeningDate())
                 .build();
     }
+
+    public AccountRequest map(Account account){
+        return AccountRequest.builder()
+                .balance(account.getBalance())
+                .identification(account.getIdentification())
+                .bsb(account.getBsb())
+                .build();
+    }
 }

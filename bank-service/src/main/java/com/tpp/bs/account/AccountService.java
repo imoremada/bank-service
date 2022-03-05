@@ -6,5 +6,5 @@ import java.util.List;
 public interface AccountService {
     Boolean processAccountOpening(Account account);
 
-    Boolean calculateDailyAccruedInterest(List<Account> accounts, LocalDate balanceDate);
+    List<Account> calculateDailyAccruedInterest(List<Account> accounts, LocalDate balanceDate);
 }

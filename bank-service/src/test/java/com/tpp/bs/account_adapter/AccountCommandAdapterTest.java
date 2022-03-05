@@ -36,7 +36,7 @@ class AccountCommandAdapterTest {
         Mockito.when(accountJpaRepository.save(any(AccountEntity.class))).thenThrow(new RuntimeException("Exception occurred"));
 
         //When
-        Boolean isSuccess = accountCommandAdapter.saveDailyInterest(mock(Account.class));
+        Boolean isSuccess = accountCommandAdapter.saveAccount(mock(Account.class));
 
         //Then
         Assertions.assertFalse(isSuccess);
@@ -51,13 +51,13 @@ class AccountCommandAdapterTest {
         Mockito.when(dateTimeProvider.currentOffsetDateTime()).thenReturn(dateTime);
 
         //When
-        Boolean isSuccess = accountCommandAdapter.saveDailyInterest(account);
+        Boolean isSuccess = accountCommandAdapter.saveAccount(account);
 
         //Then
         Assertions.assertTrue(isSuccess);
         ArgumentCaptor<AccountEntity> argumentCaptor = ArgumentCaptor.forClass(AccountEntity.class);
         Mockito.verify(accountJpaRepository, times(1)).save(argumentCaptor.capture());
-        Assertions.assertEquals(dateTime, argumentCaptor.getValue().getCreatedTime());
+        Assertions.assertEquals(dateTime, argumentCaptor.getValue().getLastUpdatedTime());
     }
 
     @Test
@@ -66,7 +66,7 @@ class AccountCommandAdapterTest {
         Mockito.when(dailyInterestJpaRepository.save(any(DailyInterestEntity.class))).thenThrow(new RuntimeException("Exception occurred"));
 
         //When
-        Boolean isSuccess = accountCommandAdapter.saveDailyInterest(mock(DailyInterest.class));
+        Boolean isSuccess = accountCommandAdapter.saveDailyAccountInterest(mock(DailyInterest.class));
 
         //Then
         Assertions.assertFalse(isSuccess);
