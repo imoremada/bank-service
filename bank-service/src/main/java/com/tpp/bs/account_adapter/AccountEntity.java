@@ -37,4 +37,11 @@ public class AccountEntity {
             @JoinColumn(name="identification", referencedColumnName="identification")
     })
     private List<DailyInterestEntity> dailyInterests;
+
+    @OneToMany
+    @MapsId("monthlyInterestId")
+    @JoinColumns({
+            @JoinColumn(name="identification", referencedColumnName="identification")
+    })
+    private List<MonthlyInterestEntity> monthlyInterestEntities;
 }
