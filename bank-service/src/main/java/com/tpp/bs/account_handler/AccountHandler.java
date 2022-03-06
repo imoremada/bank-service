@@ -35,4 +35,12 @@ public class AccountHandler {
                 .stream().map(accountMapper::map)
                 .collect(Collectors.toList());
     }
+
+    public AccountRequest calculateMonthlyInterest(String identification) {
+        return accountService.calculateMonthlyInterest(identification).map(accountMapper::map)
+                .orElseGet(() -> {
+                    log.error("Failed to calculate monthly interest for identification : {}", identification);
+                    return null;
+                });
+    }
 }

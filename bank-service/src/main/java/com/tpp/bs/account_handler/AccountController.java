@@ -2,10 +2,7 @@ package com.tpp.bs.account_handler;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -25,5 +22,10 @@ public class AccountController {
     @PutMapping("/processAccountEndOfDayBalances")
     public List<AccountRequest> processEndOfTheDayBalance(@Valid @RequestBody AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
         return accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
+    }
+
+    @PutMapping("/calculateMonthlyInterest")
+    public AccountRequest calculateMonthlyInterest(@RequestParam String identification) {
+        return accountHandler.calculateMonthlyInterest(identification);
     }
 }
