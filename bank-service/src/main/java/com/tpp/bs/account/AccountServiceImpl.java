@@ -5,16 +5,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static com.tpp.bs.utility.DateTimeUtil.getDaysInMonth;
+import static com.tpp.bs.utility.DateTimeUtil.isLastDayOfMonth;
 
 @Component
 @RequiredArgsConstructor
@@ -79,5 +84,44 @@ public class AccountServiceImpl implements AccountService {
         BigDecimal currentBalance = fetchedAccount.getBalance();
         return currentBalance.multiply(monthlyInterestRate)
                 .divide(new BigDecimal(daysInMonth * HUNDRED), 2, RoundingMode.HALF_DOWN);
+    }
+
+    @Override
+    public Optional<Account> calculateMonthlyInterest(String accountIdentifications) {
+        return processMonthlyInterest(accountIdentifications);
+    }
+
+    private Optional<Account> processMonthlyInterest(String identification) {
+        OffsetDateTime currentDate = dateTimeProvider.currentOffsetDateTime();
+        if(!isLastDayOfMonth(currentDate)){
+            log.error("Monthly interest will only be calculated at the last day of the month");
+            return Optional.empty();
+        }
+        return accountQueryRepository.findAccountBy(identification)
+                .map(fetchedAccount -> {
+                    accountQueryRepository.findMonthlyInterestBy(identification, currentDate)
+                            .map(monthlyInterest -> {
+                                log.warn("Monthly interest has already been calculated for identification: {}", identification);
+                                return Optional.empty();
+                            }).orElseGet(() -> {
+                                log.info("Going to calculate monthly interest");
+                                List<DailyInterest> dailyInterestsOfTheMonth = accountQueryRepository.findDailyInterestInMonth(identification, currentDate.toLocalDate());
+                                BigDecimal calculatedMonthlyInterest = dailyInterestsOfTheMonth.stream().map(DailyInterest::getInterest)
+                                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                fetchedAccount.setLastInterest(calculatedMonthlyInterest);
+                                fetchedAccount.setBalance(fetchedAccount.getBalance().add(calculatedMonthlyInterest));
+                                MonthlyInterest monthlyInterest = MonthlyInterest.builder()
+                                        .interest(calculatedMonthlyInterest)
+                                        .identification(identification)
+                                        .interestDate(currentDate.toLocalDate())
+                                        .build();
+                                accountCommandRepository.updateAccountWithMonthlyInterest(fetchedAccount, monthlyInterest);
+                                return Optional.of(fetchedAccount);
+                            });
+                    return Optional.of(fetchedAccount);
+                }).orElseGet(() -> {
+                    log.warn("No account found for the given identification : {}", identification);
+                    return Optional.empty();
+                });
     }
 }

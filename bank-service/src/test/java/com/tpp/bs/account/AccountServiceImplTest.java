@@ -10,9 +10,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +37,6 @@ class AccountServiceImplTest {
 
     @Spy
     private ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-
 
     @Test
     public void testShouldReturnTrueWhenCallingAccountOpening() {
@@ -122,7 +120,6 @@ class AccountServiceImplTest {
         Assertions.assertEquals(accountSavedInDB.getBalance(), updatedAccounts.get(0).getBalance());
     }
 
-
     @Test
     public void testShouldReturnSameIncomingRequestWhenAccountNotPresent() {
         //Given
@@ -149,5 +146,88 @@ class AccountServiceImplTest {
         verify(accountQueryRepository, never()).findDailyInterestBy(anyString(), any(LocalDate.class));
         verify(accountCommandRepository, never()).saveDailyAccountInterest(any(DailyInterest.class));
         Assertions.assertEquals(incomingAccount.getBalance(), updatedAccounts.get(0).getBalance());
+    }
+
+    @Test
+    public void testShouldNotCalculateMonthlyInterestIfExecutionDateIsNotTheLastDayOfMonth(){
+        //Given
+        String identification = "identification";
+        LocalDate localDate = LocalDate.of(2022, 3, 5);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.of(1, 5));
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        when(dateTimeProvider.currentOffsetDateTime()).thenReturn(offsetDateTime);
+
+        //When
+        Optional<Account> account = accountService.calculateMonthlyInterest(identification);
+
+        //Then
+        Assertions.assertTrue(account.isEmpty());
+        verify(accountCommandRepository, never()).saveMonthlyInterest(any(MonthlyInterest.class));
+        verify(accountQueryRepository, never()).findMonthlyInterestBy(anyString(), any(OffsetDateTime.class));
+        verify(accountQueryRepository, never()).findAccountBy(anyString());
+    }
+
+    @Test
+    public void testShouldNotCalculateMonthlyInterestIfMonthlyInterestIsAlreadyCalculated(){
+        //Given
+        String identification = "identification";
+        LocalDate localDate = LocalDate.of(2022, 3, 31);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.of(1, 5));
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        when(dateTimeProvider.currentOffsetDateTime()).thenReturn(offsetDateTime);
+        Account account = Account.builder().build();
+        when(accountQueryRepository.findAccountBy(anyString())).thenReturn(Optional.of(account));
+        when(accountQueryRepository.findMonthlyInterestBy(anyString(), any(OffsetDateTime.class)))
+                .thenReturn(Optional.of(mock(MonthlyInterest.class)));
+
+        //When
+        Optional<Account> updatedAccount = accountService.calculateMonthlyInterest(identification);
+
+        //Then
+        Assertions.assertFalse(updatedAccount.isEmpty());
+        Assertions.assertEquals(account, updatedAccount.get());
+        verify(accountQueryRepository, never()).findDailyInterestInMonth(anyString(), any(LocalDate.class));
+        verify(accountCommandRepository, never()).updateAccountWithMonthlyInterest(any(Account.class), any(MonthlyInterest.class));
+    }
+
+    @Test
+    public void testShouldSuccessfullyCalculateMonthlyInterest(){
+        //Given
+        String identification = "identification";
+        LocalDate localDate = LocalDate.of(2022, 3, 31);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, LocalTime.of(1, 5));
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        when(dateTimeProvider.currentOffsetDateTime()).thenReturn(offsetDateTime);
+        Account account = Account.builder()
+                .balance(BigDecimal.TEN)
+                .identification(identification)
+                .build();
+        when(accountQueryRepository.findAccountBy(anyString())).thenReturn(Optional.of(account));
+        when(accountQueryRepository.findMonthlyInterestBy(anyString(), any(OffsetDateTime.class)))
+                .thenReturn(Optional.empty());
+        DailyInterest dailyInterest1 = DailyInterest.builder()
+                .interest(new BigDecimal("1.5"))
+                .build();
+        DailyInterest dailyInterest2 = DailyInterest.builder()
+                .interest(new BigDecimal("1.6"))
+                .build();
+        BigDecimal expectedMonthlyInterest = dailyInterest1.getInterest().add(dailyInterest2.getInterest());
+        BigDecimal expectedBalance = account.getBalance().add(dailyInterest1.getInterest()).add(dailyInterest2.getInterest());
+        List<DailyInterest> dailyInterests = Arrays.asList(dailyInterest1, dailyInterest2);
+        when(accountQueryRepository.findDailyInterestInMonth(anyString(), any(LocalDate.class))).thenReturn(dailyInterests);
+
+        //When
+        Optional<Account> updatedAccount = accountService.calculateMonthlyInterest(identification);
+
+        //Then
+        Assertions.assertFalse(updatedAccount.isEmpty());
+        Assertions.assertEquals(account, updatedAccount.get());
+        Assertions.assertEquals(expectedBalance, updatedAccount.get().getBalance());
+        ArgumentCaptor<Account> accountArgumentCaptor = ArgumentCaptor.forClass(Account.class);
+        ArgumentCaptor<MonthlyInterest> monthlyInterestArgumentCaptor = ArgumentCaptor.forClass(MonthlyInterest.class);
+        verify(accountCommandRepository, times(1))
+                .updateAccountWithMonthlyInterest(accountArgumentCaptor.capture(), monthlyInterestArgumentCaptor.capture());
+        Assertions.assertEquals(expectedBalance, accountArgumentCaptor.getValue().getBalance());
+        Assertions.assertEquals(expectedMonthlyInterest, monthlyInterestArgumentCaptor.getValue().getInterest());
     }
 }
