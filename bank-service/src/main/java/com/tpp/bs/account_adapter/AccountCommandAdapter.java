@@ -3,10 +3,12 @@ package com.tpp.bs.account_adapter;
 import com.tpp.bs.account.Account;
 import com.tpp.bs.account.AccountCommandRepository;
 import com.tpp.bs.account.DailyInterest;
+import com.tpp.bs.account.MonthlyInterest;
 import com.tpp.bs.common.DateTimeProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 
@@ -17,6 +19,7 @@ public class AccountCommandAdapter implements AccountCommandRepository {
     private final AccountJpaRepository accountJpaRepository;
     private final DailyInterestJpaRepository dailyInterestJpaRepository;
     private final DateTimeProvider dateTimeProvider;
+    private final MonthlyInterestJpaRepository monthlyInterestJpaRepository;
 
     @Override
     public boolean saveAccount(Account account) {
@@ -29,6 +32,8 @@ public class AccountCommandAdapter implements AccountCommandRepository {
                             .createdTime(account.getCreatedDate())
                             .balance(account.getBalance())
                             .openingDate(account.getOpeningDate())
+                            .lastUpdatedTime(dateTimeProvider.currentOffsetDateTime())
+                            .lastCalculatedInterest(account.getLastInterest())
                     .build());
             log.info("Successfully save the account for bsp {}, openingDate: {}", account.getBsb(), account.getOpeningDate());
             return Boolean.TRUE;
@@ -55,5 +60,30 @@ public class AccountCommandAdapter implements AccountCommandRepository {
             log.error("Exception occurred while saving daily interest :{}", e);
             return Boolean.FALSE;
         }
+    }
+
+    @Override
+    public void saveMonthlyInterest(MonthlyInterest monthlyInterest) {
+        try{
+            monthlyInterestJpaRepository.save(MonthlyInterestEntity.builder()
+                            .interest(monthlyInterest.getInterest())
+                            .calculatedDate(monthlyInterest.getInterestDate())
+                            .id(MonthlyInterestId.builder()
+                                    .identification(monthlyInterest.getIdentification())
+                                    .month(monthlyInterest.getInterestDate().getMonthValue())
+                                    .year(monthlyInterest.getInterestDate().getYear())
+                                    .build())
+                    .build());
+            log.info("Successfully saved monthly interest");
+        }catch (Exception e){
+            log.error("Exception occurred while saving monthly interest {}", e);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAccountWithMonthlyInterest(Account account, MonthlyInterest monthlyInterest) {
+        saveMonthlyInterest(monthlyInterest);
+        accountJpaRepository.updateBalance(account.getIdentification(), account.getLastInterest(), account.getBalance(), dateTimeProvider.currentOffsetDateTime());
     }
 }

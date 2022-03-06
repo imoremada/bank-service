@@ -18,4 +18,6 @@ public class Account {
     private OffsetDateTime createdDate;
     @Setter
     private BigDecimal balance;
+    @Setter
+    private BigDecimal lastInterest;
 }

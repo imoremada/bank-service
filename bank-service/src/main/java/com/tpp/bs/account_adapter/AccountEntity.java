@@ -31,6 +31,7 @@ public class AccountEntity {
     private BigDecimal balance;
     private OffsetDateTime lastUpdatedTime;
     private OffsetDateTime createdTime;
+    private BigDecimal lastCalculatedInterest;
     @OneToMany
     @MapsId("dailyInterestId")
     @JoinColumns({
