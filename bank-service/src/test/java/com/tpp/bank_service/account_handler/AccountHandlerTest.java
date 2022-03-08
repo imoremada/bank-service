@@ -5,7 +5,7 @@ import com.tpp.bs.account.AccountService;
 import com.tpp.bs.account_handler.AccountBalanceCalculationRequest;
 import com.tpp.bs.account_handler.AccountHandler;
 import com.tpp.bs.account_handler.AccountMapper;
-import com.tpp.bs.account_handler.AccountRequest;
+import com.tpp.bs.account_handler.AccountDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,12 +35,12 @@ class AccountHandlerTest {
     @Test
     public void testShouldSuccessfullyHandleAccountOpeningRequest() {
         //Given
-        AccountRequest accountRequest = mock(AccountRequest.class);
-        when(accountMapper.map(any(AccountRequest.class))).thenReturn(mock(Account.class));
+        AccountDto accountDto = mock(AccountDto.class);
+        when(accountMapper.map(any(AccountDto.class))).thenReturn(mock(Account.class));
         when(accountService.processAccountOpening(any(Account.class))).thenReturn(Boolean.TRUE);
 
         //When
-        Boolean isSuccess = accountHandler.openAccount(accountRequest);
+        Boolean isSuccess = accountHandler.openAccount(accountDto);
 
         //Then
         Assertions.assertTrue(isSuccess);
@@ -52,26 +52,26 @@ class AccountHandlerTest {
         AccountBalanceCalculationRequest accountBalanceCalculationRequest = mock(AccountBalanceCalculationRequest.class);
 
         //When
-        List<AccountRequest> accountRequests = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
+        List<AccountDto> accountDtos = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
 
         //Then
-        Assertions.assertTrue(accountRequests.isEmpty());
+        Assertions.assertTrue(accountDtos.isEmpty());
     }
 
     @Test
     public void testShouldSuccessfullyHandleDailyBalanceCalculation(){
         AccountBalanceCalculationRequest accountBalanceCalculationRequest = AccountBalanceCalculationRequest.builder()
                 .balanceDate(LocalDate.now())
-                .accounts(Collections.singletonList(mock(AccountRequest.class)))
+                .accounts(Collections.singletonList(mock(AccountDto.class)))
                 .build();
 
         when(accountService.calculateDailyAccruedInterest(anyList(), any(LocalDate.class))).thenReturn(Collections.singletonList(mock(Account.class)));
-        when(accountMapper.map(any(AccountRequest.class))).thenReturn(mock(Account.class));
+        when(accountMapper.map(any(AccountDto.class))).thenReturn(mock(Account.class));
 
         //When
-        List<AccountRequest> accountRequests = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
+        List<AccountDto> accountDtos = accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
 
         //Then
-        Assertions.assertFalse(accountRequests.isEmpty());
+        Assertions.assertFalse(accountDtos.isEmpty());
     }
 }

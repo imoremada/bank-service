@@ -21,5 +21,5 @@ public class AccountBalanceCalculationRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate balanceDate;
     @NotNull
-    private List<AccountRequest> accounts;
+    private List<AccountDto> accounts;
 }

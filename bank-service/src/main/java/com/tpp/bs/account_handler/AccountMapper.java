@@ -9,17 +9,17 @@ import java.util.Objects;
 @Component
 public class AccountMapper {
 
-    public Account map(AccountRequest accountRequest){
+    public Account map(AccountDto accountDto){
         return Account.builder()
-                .identification(accountRequest.getIdentification())
-                .bsb(accountRequest.getBsb())
-                .balance(Objects.isNull(accountRequest.getBalance()) ? BigDecimal.ZERO : accountRequest.getBalance())
-                .openingDate(accountRequest.getOpeningDate())
+                .identification(accountDto.getIdentification())
+                .bsb(accountDto.getBsb())
+                .balance(Objects.isNull(accountDto.getBalance()) ? BigDecimal.ZERO : accountDto.getBalance())
+                .openingDate(accountDto.getOpeningDate())
                 .build();
     }
 
-    public AccountRequest map(Account account){
-        return AccountRequest.builder()
+    public AccountDto map(Account account){
+        return AccountDto.builder()
                 .balance(account.getBalance())
                 .identification(account.getIdentification())
                 .bsb(account.getBsb())

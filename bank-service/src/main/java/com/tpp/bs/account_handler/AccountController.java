@@ -15,17 +15,17 @@ public class AccountController {
     private final AccountHandler accountHandler;
 
     @PostMapping("/processAccountOpening")
-    public Boolean processAccountOpening(@Valid @RequestBody AccountRequest accountOpenRequest) {
+    public Boolean processAccountOpening(@Valid @RequestBody AccountDto accountOpenRequest) {
         return accountHandler.openAccount(accountOpenRequest);
     }
 
     @PutMapping("/processAccountEndOfDayBalances")
-    public List<AccountRequest> processEndOfTheDayBalance(@Valid @RequestBody AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
+    public List<AccountDto> processEndOfTheDayBalance(@Valid @RequestBody AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
         return accountHandler.processEndOfTheDayBalance(accountBalanceCalculationRequest);
     }
 
     @PutMapping("/calculateMonthlyInterest")
-    public AccountRequest calculateMonthlyInterest(@RequestParam String identification) {
+    public AccountDto calculateMonthlyInterest(@RequestParam String identification) {
         return accountHandler.calculateMonthlyInterest(identification);
     }
 }

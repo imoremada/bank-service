@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Valid
-public class AccountRequest {
+public class AccountDto {
     @NotBlank
     private String bsb;
     @NotBlank

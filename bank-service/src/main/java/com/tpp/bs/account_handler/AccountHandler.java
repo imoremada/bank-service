@@ -19,11 +19,11 @@ public class AccountHandler {
     private final AccountMapper accountMapper;
     private final AccountService accountService;
 
-    public Boolean openAccount(AccountRequest accountOpenRequest) {
+    public Boolean openAccount(AccountDto accountOpenRequest) {
         return accountService.processAccountOpening(accountMapper.map(accountOpenRequest));
     }
 
-    public List<AccountRequest> processEndOfTheDayBalance(AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
+    public List<AccountDto> processEndOfTheDayBalance(AccountBalanceCalculationRequest accountBalanceCalculationRequest) {
         if (Objects.isNull(accountBalanceCalculationRequest.getBalanceDate())) {
             log.error("Invalid request has been passed to process end of the day balance with balanceDate: {}", accountBalanceCalculationRequest.getBalanceDate());
             return Collections.EMPTY_LIST;
@@ -36,7 +36,7 @@ public class AccountHandler {
                 .collect(Collectors.toList());
     }
 
-    public AccountRequest calculateMonthlyInterest(String identification) {
+    public AccountDto calculateMonthlyInterest(String identification) {
         return accountService.calculateMonthlyInterest(identification).map(accountMapper::map)
                 .orElseGet(() -> {
                     log.error("Failed to calculate monthly interest for identification : {}", identification);

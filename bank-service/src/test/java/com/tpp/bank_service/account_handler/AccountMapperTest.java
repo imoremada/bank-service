@@ -2,7 +2,7 @@ package com.tpp.bank_service.account_handler;
 
 import com.tpp.bs.account.Account;
 import com.tpp.bs.account_handler.AccountMapper;
-import com.tpp.bs.account_handler.AccountRequest;
+import com.tpp.bs.account_handler.AccountDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ class AccountMapperTest {
     @Test
     public void testShouldSuccessfullyMapAccountRequestToAccount(){
         //Given
-        AccountRequest accountOpenRequest = AccountRequest.builder()
+        AccountDto accountOpenRequest = AccountDto.builder()
                 .identification("identification")
                 .bsb("bsp")
                 .openingDate(LocalDate.now())
@@ -39,7 +39,7 @@ class AccountMapperTest {
     @Test
     public void testShouldSuccessfullyMapAccountRequestToAccountWhenBalanceIsPresent(){
         //Given
-        AccountRequest accountOpenRequest = AccountRequest.builder()
+        AccountDto accountOpenRequest = AccountDto.builder()
                 .identification("identification")
                 .bsb("bsp")
                 .balance(BigDecimal.TEN)
@@ -60,7 +60,7 @@ class AccountMapperTest {
     @Test
     public void testShouldSuccessfullyMapAccountRequestToAccountWhenOpenDateIsNull(){
         //Given
-        AccountRequest accountOpenRequest = AccountRequest.builder()
+        AccountDto accountOpenRequest = AccountDto.builder()
                 .identification("identification")
                 .bsb("bsp")
                 .balance(BigDecimal.TEN)
