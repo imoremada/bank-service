@@ -30,7 +30,7 @@ public class MonthlyAccountInterestScheduler {
     @Autowired
     private JobRepository jobRepository;
 
-    @Scheduled(cron = "0 0 23 L * *")//Last day of month at 11pm
+    @Scheduled(cron = "${monthlyInterestCronExpression}")//Last day of month at 11pm
     public void monthlyInterestCalculationScheduler() {
         log.info("Monthly Account Interest Calculation Scheduler has been started");
         Map<String, JobParameter> params = new HashMap<>();

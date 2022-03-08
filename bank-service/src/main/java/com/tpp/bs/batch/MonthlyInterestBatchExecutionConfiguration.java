@@ -34,7 +34,7 @@ public class MonthlyInterestBatchExecutionConfiguration {
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
-    @Value("${monthly.batch.execution-chunk-size:2}")
+    @Value("${monthly.batch.execution-chunk-size:20}")
     private int pageSize;
 
     @PersistenceContext

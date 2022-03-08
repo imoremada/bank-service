@@ -10,6 +10,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,13 +25,15 @@ import static javax.batch.runtime.BatchStatus.COMPLETED;
 @Slf4j
 @EnableScheduling
 public class DailyAccountInterestScheduler {
+    @Value("${daily.scheduler.chron:0 0 21 * * *}")
+    private String dailySchedulerChron;
 
     private final @Qualifier("dailyAccountInterestJob")  Job dailyAccountInterestJob;
 
     @Autowired
     private JobRepository jobRepository;
 
-    @Scheduled(cron = "0 0 21 * * *")//every day at 9pm
+    @Scheduled(cron = "${dailyInterestCronExpression}")//every day at 9pm
     public void dailyInterestCalculationScheduler() {
         log.info("Daily Account Interest Calculation Scheduler has been started");
         Map<String, JobParameter> params = new HashMap<>();

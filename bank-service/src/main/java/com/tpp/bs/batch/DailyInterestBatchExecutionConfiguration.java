@@ -33,7 +33,7 @@ public class DailyInterestBatchExecutionConfiguration {
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
 
-    @Value("${daily.batch.execution-chunk-size:2}")
+    @Value("${daily.batch.execution-chunk-size:20}")
     private int pageSize;
 
     @PersistenceContext
